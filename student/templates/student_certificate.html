@@ -1,0 +1,29 @@
+{% extends "base1.html" %}
+{% load static %}
+{% block body_block %}
+
+<div class="untree_co-section">
+    <div class="container">
+        <h1>Issued Certificates</h1>
+        <div class="row align-items-stretch">
+            {% for certificate in certificates %}    
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0 ">
+              <div class="custom-media">
+                <div class="custom-media-body ">
+                  
+                  <h3>{{ certificate.certificate_template.course.title }} | {{certificate.certificate_template.course.difficulty_level}}</h3>
+                  <p class="mb-4">{{course.description}}</p>
+                  <div class="border-top d-flex justify-content-between pt-3 mt-3 align-items-center">
+                    <div>
+                      <a href="{{ certificate.certificate_file.url }}">Certificate Download</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%endfor%}
+          </div>
+    </div>
+</div>
+
+{% endblock %}

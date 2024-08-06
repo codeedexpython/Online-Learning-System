@@ -1,0 +1,50 @@
+{% extends "base1.html" %}
+
+{% block body_block %}
+
+  <div class="untree_co-section mt-5">
+    <div class="container">
+
+
+      <div class="col-8 mb-5">
+        <form method="get" action="{% url 'student_dashboard' %}" class="d-flex align-items-center">
+            <div class="form-group flex-grow-1 mb-0 mr-2">
+                <input type="text" id="course_title" name="course_title" class="form-control" value="{{ course_title }}" placeholder="Search by course title">
+            </div>
+            <div class="form-group mb-0 mr-2">
+                <select id="main_category" name="main_category" class="form-control">
+                    <option value="">Select Main Category</option>
+                    {% for category in main_categories %}
+                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == request.GET.main_category %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>    
+      <div class="row align-items-stretch">
+        {%for course in courses%}
+        <a href="{% url 'student_course_detail' course.id %}">
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0 ">
+          <div class="custom-media">
+            <div class="custom-media-body ">
+              <div class="d-flex justify-content-between pb-3">
+                <div class="text-primary"><span class="uil uil-book-open"></span> <span>{{course.modules.count}}</span> Modules </div>
+              </div>
+              <h3>{{course.title}} | {{course.category}}</h3>
+              <p class="mb-4">{{course.description}}</p>
+              <div class="border-top d-flex justify-content-between pt-3 mt-3 align-items-center">
+                <div>
+                  <a href="{% url 'student_course_detail' course.id %}">Enroll Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </a>
+        {%endfor%}
+      </div>
+    </div>
+  </div>
+  {% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% block body_block %}
+<div class="midde_cont">
+   <div class="container mt-4">
+      <div class="row column_title">
+         <div class="col-md-12">
+            <div class="white_shd full margin_bottom_30">
+               <div class="full graph_head">
+                  <div class="heading1 margin_0">
+                     <h1>{{ course.title }}</h1>
+                  </div>
+               </div>
+               <div class="full inner_elements">
+                  <div class="row">
+                     <div class="col-md-12">
+                        <div class="tab_style1">
+                           <div class="tabbar padding_infor_info">
+                              <p><strong>Instructor:</strong> {{ course.instructor.first_name }} {{ course.instructor.last_name }}</p>
+                              <p><strong>Category:</strong> {{ course.category.name }}</p>
+                              <p><strong>Difficulty Level:</strong> {{ course.difficulty_level }}</p>
+                              <p><strong>Status:</strong> {{ course.is_published|yesno:"Published, Unpublished" }}</p>
+                              <p>
+                                 <form method="post">
+                                    {% csrf_token %}
+                                    {%for fields in limit_form%}
+                                    <p>
+                                       <strong>{{fields.label_tag}}</strong>
+                                       <div class="w-25">{{fields}}</div>
+                                    </p>
+                                       
+                                    {%endfor%}
+                                    <button type="submit" name="update_limit" class="btn btn-primary">Save Enrollment Limit</button>
+                                </form>
+                              </p>
+                              <nav>
+                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Description</a>
+                                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Enrolled Students</a>
+                                    <a class="nav-item nav-link" id="nav-doubts-tab" data-toggle="tab" href="#nav-doubts" role="tab" aria-controls="nav-doubts" aria-selected="false">Quiz & Doubts</a>
+                                    <a class="nav-item nav-link text-danger" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Delete</a>
+                                 </div>
+                              </nav>
+                              <div class="tab-content" id="nav-tabContent">
+                                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                                    <p>{{ course.description }}</p>
+                                 </div>
+                                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                    <p>
+                                       <form action="{% url 'delete_course' course_id=course.id %}" method="post" class="delete-course-form" style="display:inline;">
+                                          {% csrf_token %}
+                                          <input type="hidden" name="course_id" value="{{ course.id }}">
+                                          <button type="submit" class="btn btn-sm btn-danger">
+                                              Delete Course
+                                          </button>
+                                      </form>
+                                      
+                                    </p>
+                                 </div>
+                                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                                    <div class="msg_list_main">
+                                       <ul class="msg_list">
+                                          {%for enroll in enrolled_students%}
+                                          <li>
+                                             <span class="name_user">{{enroll.student.first_name}} {{enroll.student.last_name}}</span>
+
+                                             <form method="post" action="{% url 'course_detail' course_id=course.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="enroll_id" value="{{ enroll.id }}">
+                                                <button type="submit" name="action" value="remove" class="btn btn-danger btn-xs">Remove</button>
+                                            </form>
+                                          </li>
+                                          {%endfor%}
+                                       </ul>
+                                    </div>
+                                 </div>
+                                 <div class="tab-pane fade" id="nav-doubts" role="tabpanel" aria-labelledby="nav-doubts-tab">
+                                    <p>
+                                       <a href="{% url 'quiz_doubt' course_id=course.id %}">
+                                          <button class="btn btn-outline-primary">Quiz & Doubt</button>
+                                      </a>                                    
+                                    </p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="col-md-12">
+         <div class="white_shd full margin_bottom_30">
+            <div class="full graph_head">
+               <div class="heading1 margin_0">
+                  <h2>Modules</h2>
+               </div>
+               <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                     Add Modules<i class="fa fa-add"></i>
+                   </button>
+
+                   <!-- Modal -->
+                   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog modal-dialog-centered">
+                       <div class="modal-content">
+                         <div class="modal-header">
+                           <h1 class="modal-title fs-5" id="exampleModalLabel">Add Modules</h1>
+                         </div>
+                         <div class="modal-body">
+                           <form action="" method="post">
+                              {%csrf_token%}
+                              {%for fields in module_form%}
+                              <p>
+                                  {{fields.label_tag}}
+                                  {{fields}}
+                              {%endfor%}
+                              </p>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="submit" name="create_module" class="btn btn-primary">Create</button>
+                          </form>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+               </div>
+            </div>
+            <div class="full inner_elements">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="row column_title">
+                        <div class="tab_style3">
+                           <div class="tabbar padding_infor_info">
+                              <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                 {% for module in modules %}
+                                 <a class="nav-link{% if forloop.first %} active{% endif %}" id="v-pills-{{ module.id }}-tab" data-toggle="pill" href="#v-pills-{{ module.id }}" role="tab" aria-controls="v-pills-{{ module.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                     {{ module.order }}. {{ module.title }}
+                                 </a>
+                                 {% endfor %}
+                              </div>
+                              <div class="tab-content" id="v-pills-tabContent">
+                                  {% for module in modules %}
+                                      <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="v-pills-{{ module.id }}" role="tabpanel" aria-labelledby="v-pills-{{ module.id }}-tab">
+                                          <div class="d-flex gap-2">
+                                             <h5>{{ module.title }}</h5>
+                                             <form action="{% url 'delete_module' course_id=course.id %}" method="post" style="display:inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="module_id" value="{{ module.id }}">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                             </form>
+                                          </div>
+                                          <p>{{ module.description }}</p>
+                                          <div class="d-flex justify-content-end">
+                                              <button type="button" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#Modal{{ module.id }}">
+                                                  Add Material<i class="fa fa-add"></i>
+                                              </button>
+                          
+                                              <!-- Modal -->
+                                              <div class="modal fade" id="Modal{{ module.id }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ module.id }}" aria-hidden="true">
+                                                  <div class="modal-dialog modal-dialog-centered">
+                                                      <div class="modal-content">
+                                                          <div class="modal-header">
+                                                              <h1 class="modal-title fs-5" id="exampleModalLabel{{ module.id }}">Add Material</h1>
+                                                          </div>
+                                                          <div class="modal-body">
+                                                            <form action="{% url 'course_detail' course.id %}" method="post" enctype="multipart/form-data">
+                                                               {% csrf_token %}
+                                                               {{ material_form.as_p }}
+                                                               <input type="hidden" name="module_id" value="{{ module.id }}">
+                                                               <button type="submit" name="upload_material" class="btn btn-primary mt-1">Upload Materials</button>
+                                                           </form>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                          
+                                          <ul class="list-group">
+                                              {% for file in module.files.all %}
+                                                  <li class="list-group-item">
+                                                      {% if file.file_type == "pdf" %}
+                                                          <p><i class="fa fa-file-pdf-o red_color me-2"></i> <a href="{{ file.file.url }}">{{ module.title }}.pdf</a></p>
+                                                          <embed src="{{ file.file.url }}" width="640" height="480" type="application/pdf">
+                                                      {% elif file.file_type == "video" %}
+                                                          <video width="500" height="300" controls>
+                                                              <source src="{{ file.file.url }}" type="video/mp4">
+                                                              Your browser does not support the video tag.
+                                                          </video>
+                                                      {% else %}
+                                                          <p>{{ file.file.name }}</p>
+                                                      {% endif %}
+                                                      <form action="{% url 'delete_material' course_id=course.id %}" style="margin-left: 750px;margin-top: -20px;" method="post" style="display:inline;">
+                                                         {% csrf_token %}
+                                                         <input type="hidden" name="material_id" value="{{ file.id }}">
+                                                         <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button>
+                                                     </form>
+                                                  </li>
+                                              {% empty %}
+                                                  <li class="list-group-item">No materials available for this module.</li>
+                                              {% endfor %}
+                                          </ul>
+                                      </div>
+                                  {% endfor %}
+                              </div>
+                          </div>
+                          
+                       </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+   </div>
+</div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+       document.querySelectorAll('.delete-course-form').forEach(function(form) {
+           form.addEventListener('submit', function(event) {
+               event.preventDefault();
+               if (confirm('Are you sure you want to delete this course?')) {
+                   fetch(form.action, {
+                       method: 'POST',
+                       headers: {
+                           'X-Requested-With': 'XMLHttpRequest',
+                           'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                       },
+                       body: new FormData(form)
+                   })
+                   .then(response => response.json())
+                   .then(data => {
+                       if (data.success) {
+                           // Optionally remove the course element from the DOM
+                           form.closest('div').remove();
+                       } else {
+                           alert('Failed to delete course.');
+                       }
+                   })
+                   .catch(error => console.error('Error:', error));
+               }
+           });
+       });
+   });
+</script>
+{% endblock %}

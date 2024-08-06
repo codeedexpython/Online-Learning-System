@@ -1,0 +1,65 @@
+{% extends "base1.html" %}
+
+{% block body_block %}
+<div class="untree_co-section">
+<div class="container mt-4">
+    <h2>Manage Certificate Templates</h2>
+    
+    <div class="row">
+        {% for course, form in templates %}
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="media-h d-flex h-100">
+                    <div class="media-h-body">
+                        <p><i class="fa-regular fa-file"></i> 
+                        <a href="{{ course.template.template_file.url }}" target="_blank">{{ course.template.template_file }}</a></p>
+                        
+                        <p><strong>Course Name:</strong> {{ course.title }}</p>
+                        
+                        <!-- Button to open modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#templateModal_{{ course.id }}">
+                            {% if form.instance.pk %}
+                                Update Template
+                            {% else %}
+                                Create Template
+                            {% endif %}
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="templateModal_{{ course.id }}" tabindex="-1" role="dialog" aria-labelledby="templateModalLabel_{{ course.id }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="templateModalLabel_{{ course.id }}">
+                                {% if form.instance.pk %}
+                                    Update Template for {{ course.title }}
+                                {% else %}
+                                    Create New Template for {{ course.title }}
+                                {% endif %}
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                {{ form.as_p }}
+                                <input type="hidden" name="course_id" value="{{ course.id }}">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Template</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

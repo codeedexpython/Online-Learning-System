@@ -1,0 +1,65 @@
+{% extends "base1.html" %}
+{%load static%}
+{% block body_block %}
+
+    <div class="untree_co-section">
+      <div class="container">
+
+        <div class="custom-block" data-aos="fade-up" data-aos-delay="100">
+
+            <h2 class="section-title">Pending Enrollment Requests</h2>
+        
+            {% if pending_requests %}
+            <form method="post" action="{% url 'pending_requests' %}">
+                {% csrf_token %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Difficulty Level</th>
+                            <th>Request Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in pending_requests %}
+                            <tr>
+                                <td>{{ request.student.username }}</td>
+                                <td>{{ request.course.title }}</td>
+                                <td>{{ request.course.difficulty_level }}</td>
+                                <td>{{ request.request_date }}</td>
+                                <td>
+
+                                    {% if enroll.course.enrollment_limit.is_full %}
+                                        Course Full
+                                        <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                            <i class="fa-solid fa-xmark"></i> 
+                                        </button>                           
+                                    {% else %}
+                                        <input type="hidden" name="request_id" value="{{ request.id }}">
+                                        <button type="submit" name="action" value="approve" class="btn btn-success">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>                              
+                                        <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                            <i class="fa-solid fa-xmark"></i> 
+                                        </button>                           
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">No pending requests.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+            {% else %}
+                <p>No pending enrollment requests for your courses.</p>
+            {% endif %}
+        </div>
+
+      </div>
+    </div>
+{% endblock %}

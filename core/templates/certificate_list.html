@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block body_block %}
+    <h1>Issued Certificates</h1>
+
+    <div class="white_shd full margin_bottom_30">
+        <div class="full graph_head">
+           <div class="heading1 margin_0">
+              <h2>Table Head Colors</h2>
+           </div>
+        </div>
+        <div class="table_section padding_infor_info">
+           <div class="table-responsive-sm">
+              <table class="table">
+                 <thead class="thead-dark">
+                    <tr>
+                       <th>Username</th>
+                       <th>Email</th>
+                       <th>Course</th>
+                       <th>Certificates</th>
+                    </tr>
+                 </thead>
+                 <tbody>
+                    {% for certificate in certificates %}
+                    <tr>
+                       <td>{{ certificate.student.username }}</td>
+                       <td>{{ certificate.student.email }}</td>
+                       <td>{{ certificate.certificate_template.course.title }}</td>
+                       <td><a href="{{ certificate.certificate_file.url }}">Download</a></td>
+                    </tr>
+                    {% endfor %}
+                 </tbody>
+              </table>
+           </div>
+        </div>
+{% endblock %}

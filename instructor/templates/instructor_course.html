@@ -1,0 +1,21 @@
+<!-- instructor_course.html -->
+
+{% extends "base1.html" %}
+
+{% block body_block %}
+<div class="untree_co-section mt-5 bg-light">
+  <div class="container bg-white col-lg-6 p-5">
+    <h2>Create a New Course</h2>
+    <div class="col-lg-6  m-3 ">
+      <form method="post">
+        {% csrf_token %}
+        {%for fields in form%}
+        <p>
+            {{fields.label_tag}}
+            {{fields}}</p>
+        {%endfor%}
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+    </div>
+</div>
+{% endblock %}

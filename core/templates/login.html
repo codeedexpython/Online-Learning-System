@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+   {%load static%}
+   <head>
+      <!-- basic -->
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!-- mobile metas -->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+      <!-- site metas -->
+      <title>Pluto - Responsive Bootstrap Admin Panel Templates</title>
+      <meta name="keywords" content="">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <!-- site icon -->
+      <!-- bootstrap css -->
+      <link rel="stylesheet" href="{%static 'core/css/bootstrap.min.css'%}" />
+      <!-- site css -->
+      <link rel="stylesheet" href="{%static 'core/style.css'%}" />
+      <!-- responsive css -->
+      <link rel="stylesheet" href="{%static 'core/css/responsive.css'%}" />
+      <!-- color css -->
+      <link rel="stylesheet" href="{%static 'core/css/colors.css'%}" />
+      <!-- select bootstrap -->
+      <link rel="stylesheet" href="{%static 'core/css/bootstrap-select.css'%}" />
+      <!-- scrollbar css -->
+      <link rel="stylesheet" href="{%static 'core/css/perfect-scrollbar.css'%}" />
+      <!-- custom css -->
+      <link rel="stylesheet" href="{%static 'core/css/custom.css'%}" />
+      <!-- calendar file css -->
+      <link rel="stylesheet" href="{%static 'core/js/semantic.min.css'%}" />
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+   </head>
+   <body class="inner_page login">
+      <div class="full_container">
+         <div class="container">
+            <div class="center verticle_center full_height">
+               <div class="login_section">
+                  <div class="logo_login">
+                     <div class="center">
+                        <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>eLEARNING</h2>
+                     </div>
+                  </div>
+                  <div class="login_form">
+                     <form method="post">
+                        {%csrf_token%}
+                        <fieldset>
+                           <div class="field">
+                              <label class="label_field">Username</label>
+                              <input type="text" name="username"/>
+                           </div>
+                           <div class="field">
+                              <label class="label_field">Password</label>
+                              <input type="password" name="password"/>
+                           </div>
+                           <div class="field margin_0">
+                              <label class="label_field hidden">hidden label</label>
+                              <button type="submit" class="main_bt">Sing In</button>
+                           </div>
+                        </fieldset>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      
+ <!-- jQuery -->
+ <script src="{%static 'core/js/jquery.min.js'%}"></script>
+ <script src="{%static 'core/js/popper.min.js'%}"></script>
+ <script src="{%static 'core/js/bootstrap.min.js'%}"></script>
+ <!-- wow animation -->
+ <script src="{%static 'core/js/animate.js'%}"></script>
+ <!-- select country -->
+ <script src="{%static 'core/js/bootstrap-select.js'%}"></script>
+ <!-- nice scrollbar -->
+ <script src="{%static 'core/js/perfect-scrollbar.min.js'%}"></script>
+ <script>
+    var ps = new PerfectScrollbar('#sidebar');
+ </script>
+ <!-- custom js -->
+ <script src="{%static 'core/js/custom.js'%}"></script>
+</body>
+</html>

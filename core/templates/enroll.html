@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block body_block %}
+<div class="col-md-12">
+    <div class="white_shd full margin_bottom_30">
+       <div class="full graph_head">
+          <div class="heading1 margin_0">
+             <h2>Enroll Requests</h2>
+          </div>
+       </div>
+       <div class="table_section padding_infor_info">
+          <div class="table-responsive-sm">
+             <table class="table table-hover">
+                <thead>
+                   <tr>
+                      <th>No.</th>
+                      <th>Name</th>
+                      <th>Course</th>
+                      <th>Action</th>
+                   </tr>
+                </thead>
+                <tbody>
+                    {%for enroll in requests%}
+                   <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{enroll.student.first_name}} {{enroll.student.last_name}}</td>
+                      <td>{{enroll.course}}</td>
+                      <td class="d-flex gap-2">
+                        <form method="post" action="{% url 'enrollment_req' %}" style="display:inline;">
+                           {% csrf_token %}
+                           <input type="hidden" name="enroll_id" value="{{ enroll.id }}">
+                           {% if enroll.course.enrollment_limit.is_full %}
+                              Course Full
+                              <button type="submit" name="action" value="reject" class="btn btn-danger btn-xs">Reject</button>
+                           {% else %}
+                              <button type="submit" name="action" value="approve" class="btn btn-success btn-xs">Approve</button>
+                              <button type="submit" name="action" value="reject" class="btn btn-danger btn-xs">Reject</button>
+                           {% endif %}
+                        </form>
+                      </td>
+                   </tr>
+                   {% empty %}
+                    <tr>
+                        <td colspan="3">No pending enrollment requests.</td>
+                    </tr>
+                   {%endfor%}
+                </tbody>
+             </table>
+          </div>
+       </div>
+    </div>
+ </div>
+
+
+{% endblock %}

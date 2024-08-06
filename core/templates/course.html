@@ -1,0 +1,157 @@
+{%extends 'base.html'%}
+{%block body_block%}
+               <!-- end topbar -->
+               <!-- dashboard inner -->
+               <div class="midde_cont">
+                  <div class="container-fluid">
+                     <div class="row column_title">
+                        <div class="col-md-12">
+                           <div class="page_title">
+                              <h2>Course</h2>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- row -->
+                     <div class="row column1">
+                        <div class="col-md-12">
+                           <div class="white_shd full margin_bottom_30">
+                              <div class="full graph_head">
+                                 <div class="heading1 margin_0">
+                                    <h2>Course List</small></h2>
+                                 </div>
+                                 <div class="d-flex justify-content-end">
+                                    <a href="{%url 'create_course'%}"><button type="button" class="btn btn-primary">
+                                       Create Course
+                                    </button></a>
+                                 </div>
+                              </div>
+                              <div class="full price_table padding_infor_info">
+                                 <div class="row">
+                                    <div class="col-lg-12">
+                                       <div class="table-responsive-sm">
+                                          <table class="table table-striped projects">
+                                             <thead class="thead-dark">
+                                                <tr>
+                                                   <th style="width: 2%">ID</th>
+                                                   <th style="width: 13%">Course Title</th>
+                                                   <th>Sub Category</th>
+                                                   <th style="width: 13%">Instructor</th>
+                                                   <th>Difficulty Level</th>
+                                                   <th>Category</th>
+                                                   <th>Edit</th>
+                                                   <th>Action</th>
+                                                </tr>
+                                             </thead>
+                                             <tbody>
+                                                {%for course in courses%}
+                                                <tr>
+                                                   <td>{{course.id}}</td>
+                                                   <td>
+                                                      <a href="{%url 'course_detail' course.id%}">{{course.title}}</a>
+                                                   </td>
+                                                   <td>
+                                                      <a>{{course.category}}</a>
+                                                   </td>
+                                                   <td>
+                                                      <a>{{course.instructor.first_name}} {{course.instructor.last_name}}</a>
+                                                   </td>
+                                                   <td>
+                                                      <a>{{course.difficulty_level}}</a>
+                                                   </td>
+                                                   <td>
+                                                      <a>{{course.category.parent_category}}</a>
+                                                   </td>
+                                                   <td>
+                                                      <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#editModal{{ course.id }}">Edit</button>
+                                                  </td>
+                                                   <td>
+                                                      <form method="post" action="{% url 'course_list' %}" style="display:inline;">
+                                                         {% csrf_token %}
+                                                         <input type="hidden" name="course_id" value="{{ course.id }}">
+                                                         {% if course.is_published %}
+                                                         <button type="submit" name="action" value="unpublish" class="btn btn-danger btn-xs">Unpublish</button>
+                                                         {% else %}
+                                                         <button type="submit" name="action" value="publish" class="btn btn-success btn-xs">Publish</button>
+                                                         {% endif %}
+                                                     </form>
+                                                   </td>
+                                                </tr>
+                                                {%endfor%}
+                                             </tbody>
+                                          </table>
+                                          {% for course in courses %}
+                                          <div class="modal fade" id="editModal{{ course.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ course.id }}" aria-hidden="true">
+                                             <div class="modal-dialog" role="document">
+                                                 <div class="modal-content">
+                                                     <div class="modal-header">
+                                                         <h5 class="modal-title" id="editModalLabel{{ course.id }}">Edit Course</h5>
+                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                             <span aria-hidden="true">&times;</span>
+                                                         </button>
+                                                     </div>
+                                                     <form method="post" action="{% url 'course_list' %}">
+                                                         {% csrf_token %}
+                                                         <input type="hidden" name="course_id" value="{{ course.id }}">
+                                                         <input type="hidden" name="action" value="update_course">
+                                                         <div class="modal-body">
+                                                             <div class="form-group">
+                                                                 <label for="title-{{ course.id }}">Title</label>
+                                                                 <input type="text" class="form-control" id="title-{{ course.id }}" name="title" value="{{ course.title }}">
+                                                             </div>
+                                                             <div class="form-group">
+                                                                 <label for="description-{{ course.id }}">Description</label>
+                                                                 <textarea class="form-control" id="description-{{ course.id }}" name="description">{{ course.description }}</textarea>
+                                                             </div>
+                                                             <div class="form-group">
+                                                                 <label for="instructor-{{ course.id }}">Instructor</label>
+                                                                 <select class="form-control" id="instructor-{{ course.id }}" name="instructor">
+                                                                     {% for instructor in instructors %}
+                                                                         <option value="{{ instructor.id }}" {% if instructor == course.instructor %}selected{% endif %}>
+                                                                             {{ instructor.first_name }} {{ instructor.last_name }}
+                                                                         </option>
+                                                                     {% endfor %}
+                                                                 </select>
+                                                             </div>
+                                                             <div class="form-group">
+                                                                 <label for="category-{{ course.id }}">Category</label>
+                                                                 <select class="form-control" id="category-{{ course.id }}" name="category">
+                                                                     {% for category in categories %}
+                                                                         <option value="{{ category.id }}" {% if category == course.category %}selected{% endif %}>
+                                                                             {{ category.name }}
+                                                                         </option>
+                                                                     {% endfor %}
+                                                                 </select>
+                                                             </div>
+                                                             <div class="form-group">
+                                                                 <label for="difficulty_level-{{ course.id }}">Difficulty Level</label>
+                                                                 <select class="form-control" id="difficulty_level-{{ course.id }}" name="difficulty_level">
+                                                                     <option value="beginner" {% if course.difficulty_level == 'beginner' %}selected{% endif %}>Beginner</option>
+                                                                     <option value="intermediate" {% if course.difficulty_level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                                                                     <option value="advanced" {% if course.difficulty_level == 'advanced' %}selected{% endif %}>Advanced</option>
+                                                                 </select>
+                                                             </div>
+                                                         </div>
+                                                         <div class="modal-footer">
+                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                             <button type="submit" class="btn btn-primary">Save changes</button>
+                                                         </div>
+                                                     </form>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                          {% endfor %}
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- end row -->
+                     </div>
+                  </div>
+                  <!-- end dashboard inner -->
+               </div>
+            </div>
+         </div>
+      </div>
+      {%endblock%}

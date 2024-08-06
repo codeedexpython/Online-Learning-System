@@ -1,0 +1,179 @@
+{% extends "base1.html" %}
+{% load static %}
+{% block body_block %}
+
+<div class="untree_co-section">
+    <div class="container">
+        <div class="untree_co-section">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-12">
+                        <h2 class="line-bottom mb-4" data-aos="fade-up" data-aos-delay="0">{{ course.title }}</h2>
+                        <p data-aos="fade-up" data-aos-delay="100">{{ course.description }}</p>
+
+                        <div class="row count-numbers mb-5">
+                            <div class="col-3 col-lg-3" data-aos="fade-up" data-aos-delay="">
+                                <a href="{% url 'course_enrolled_students' course.id %}"><span class="counter d-block"><span data-number="{{ accepted_count }}">0</span><span>+</span></span></a>
+                                <span class="caption-2">No. Students</span>
+                            </div>
+                            <div class="col-3 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                                <span class="counter d-block">{{ course.difficulty_level }}</span>
+                                <span class="caption-2">Difficulty Level</span>
+                            </div>
+                            <div class="col-3 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                                <span class="counter d-block">{{ course.category }}</span>
+                                <span class="caption-2">Category</span>
+                            </div>
+                        </div>
+
+                        <p data-aos="fade-up" data-aos-delay="200">
+                            <form method="post" action="{% url 'student_course_detail' course.id %}">
+                                {% csrf_token %}
+                                {% if enrollment_request %}
+                                    {% if enrollment_request.status == 'approved' %}
+                                        <input type="hidden" name="action" value="unenroll">
+                                        <button type="submit" class="btn btn-outline-danger btn-xs">Unenroll</button>
+                                    {% elif enrollment_request.status == 'pending' %}
+                                        <button class="btn btn-outline-secondary btn-xs" disabled>Enrollment Request Sent</button>
+                                    {% elif enrollment_request.status == 'rejected' %}
+                                        <p class="text-danger">Rejected <input type="hidden" name="action" value="enroll">
+                                            <button type="submit" class="btn btn-outline-primary">Re Enroll</button></p>
+                                    {% endif %}
+                                {% else %}
+                                    <input type="hidden" name="action" value="enroll">
+                                    <button type="submit" class="btn btn-outline-primary">Enroll</button>
+                                {% endif %}
+                            </form>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="custom-block" data-aos="fade-up">
+                <h2 class="section-title">Modules and Quizzes</h2>
+                <div class="custom-accordion" id="accordion_1">
+                  {% for module in modules %}
+                      <div class="accordion-item">
+                          <h2 class="mb-0 d-flex">
+                              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_{{ module.id }}" aria-expanded="false" aria-controls="collapse_{{ module.id }}">
+                                  {{ module.title }}
+                              </button>
+                          </h2>
+                          {% if enrollment_request.status == 'approved' %}
+                          <div id="collapse_{{ module.id }}" class="collapse" aria-labelledby="heading_{{ module.id }}" data-parent="#accordion_1">
+                              <div class="">
+                                  {{ module.description }}
+                                  <ul>
+                                      {% for material in module.files.all %}
+                                          {% if material.file_type == "pdf" %}
+                                              <p><i class="fa-regular fa-file"></i> <a href="{{ material.file.url }}">{{ module.title }}.pdf</a></p>
+                                              <embed src="{{ material.file.url }}" width="640" height="480" type="application/pdf">
+                                          {% elif material.file_type == "video" %}
+                                              <video width="490" height="300" controls>
+                                                  <source src="{{ material.file.url }}" type="video/mp4">
+                                                  Your browser does not support the video tag.
+                                              </video>
+                                          {% else %}
+                                              <p>{{ material.file.name }}</p>
+                                          {% endif %}
+                                      {% empty %}
+                                          <li>No materials available.</li>
+                                      {% endfor %}
+                                  </ul>
+              
+                                  <!-- Display quizzes -->
+                                  {% for quiz_info in quizzes_with_questions %}
+                                      {% if quiz_info.module.id == module.id %}
+                                          {% for quiz in quiz_info.quizzes %}
+                                              <h3>{{ quiz.quiz.title }}</h3>
+                                              {% if quiz.attempt %}
+                                                  <p>Your Score: {{ quiz.attempt.score }}</p>
+                                              {% else %}
+                                                  <form method="post" action="{% url 'student_course_detail' course.id %}">
+                                                      {% csrf_token %}
+                                                      <input type="hidden" name="quiz_id" value="{{ quiz.quiz.id }}">
+                                                      <input type="hidden" name="module_id" value="{{ module.id }}">
+                                                      {% for question in quiz.questions %}
+                                                          <div>
+                                                              <strong>{{ question.text }}</strong>
+                                                              {% for option in question.options.all %}
+                                                                  <div>
+                                                                      <input type="radio" id="option_{{ option.id }}" name="question_{{ question.id }}" value="{{ option.id }}">
+                                                                      <label for="option_{{ option.id }}">{{ option.text }}</label>
+                                                                  </div>
+                                                              {% endfor %}
+                                                          </div>
+                                                      {% endfor %}
+                                                      <button type="submit" name="submit_quiz" value="true" class="btn btn-primary">Submit Quiz</button>
+                                                  </form>
+                                              {% endif %}
+                                          {% endfor %}
+                                      {% endif %}
+                                  {% endfor %}
+                                  {% if forloop.last %}
+                                    <a href="{% url 'generate_certificate' course.id %}" class="btn btn-primary mt-3">Generate Certificate</a>
+                                  {% endif %}
+                              </div>
+                          </div>
+                          {% endif %}
+                      </div>
+                  {% empty %}
+                      <div class="accordion-item">
+                          <div class="accordion-body">
+                              No modules available.
+                          </div>
+                      </div>
+                  {% endfor %}
+              </div>
+              
+            </div>
+        </div>
+
+            {% if enrollment_request.status == 'approved' %}
+            <div class="col-lg-6">
+                <h5>Discussion</h5>
+                <div class="discussion-container mt-4">
+                    {% for message_id, discussion_data in discussions.items %}
+                        {% with discussion=discussion_data.message %}
+                        <div class="border p-3 mb-2">
+                            <strong>{{ discussion.sender.get_full_name }}:</strong> {{ discussion.message }}<br>
+                            <small class="text-muted">{{ discussion.timestamp }}</small>
+                        {% endwith %}
+                        {% for reply in discussion_data.replies %}
+                            <div class="border-left pl-3 mt-2">
+                                <strong>{{ reply.sender.get_full_name }}:</strong> {{ reply.message }}<br>
+                                <small class="text-muted">{{ reply.timestamp }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% empty %}
+                        <p>No discussions yet.</p>
+                    {% endfor %}
+                </div>
+                </div>
+
+                <h5 class="mt-3">Send a Message</h5>
+                <form method="post" action="{% url 'student_course_detail' course.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="send_message" value="true">
+                    <button type="submit" class="btn btn-primary mt-3">Send</button>
+                </form>
+
+                
+            </div>
+            {% endif %}
+        </div> <!-- /.row -->
+    </div> <!-- /.container -->
+</div>
+
+<style>
+    .discussion-container {
+        max-height: 250px;
+        overflow-y: auto;
+        padding-right: 15px;
+    }
+</style>
+{% endblock %}

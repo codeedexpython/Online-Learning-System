@@ -1,0 +1,231 @@
+{% extends "base1.html" %}
+{%load static%}
+{% block body_block %}
+
+    <div class="untree_co-section">
+      <div class="container">
+
+
+        <div class="untree_co-section">
+          <div class="container">
+            <div class="row justify-content-between">
+              <div class="col-lg-12">
+                <h2 class="line-bottom mb-4" data-aos="fade-up" data-aos-delay="0">{{ course.title }}</h2>
+                <p data-aos="fade-up" data-aos-delay="100">{{ course.description }}</p>
+      
+                <div class="row count-numbers mb-5">
+                  <div class="col-2 col-lg-2" data-aos="fade-up" data-aos-delay="0">
+                    <a href="{%url 'course_enrolled_students' course.id%}"><span class="counter d-block"><span data-number="{{ accepted_count }}">0</span><span>+</span></span>
+                    </a>
+                    <span class="caption-2">No. Students</span>
+                  </div>
+                  <div class="col-3 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                    <span class="counter d-block">{{ course.difficulty_level}}</span>
+                    <span class="caption-2">Difficulty Level</span>
+                  </div>
+                  <div class="col-3 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                    <span class="counter d-block">{{ course.category}}</span>
+                    <span class="caption-2">Category</span>
+                  </div>
+                  <div class="col-2 col-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <span class="counter d-block">{{ course.enrollment_limit.enrollment_limit}}</span>
+                    <span class="caption-2">Erollment Limit</span>
+                  </div>
+                  <div class="col-2 col-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <a href="{%url 'pending_requests'%}?course_id={{course.id}}"><span class="counter d-block"><span data-number="{{ pending_count }}">0</span></span></a>
+                    <span class="caption-2">Pending Request</span>
+                  </div>
+                </div>
+      
+                <p data-aos="fade-up" data-aos-delay="200">
+                  <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                    {% if course.is_published %}
+                    <button type="submit" name="unpublish" class="btn btn-outline-warning btn-xs">Unpublish</button>
+                    {% else %}
+                    <button type="submit" name="publish" class="btn btn-outline-success btn-xs">Publish</button>
+                    {% endif %}
+                  </form>
+                  <a href="{%url 'instructor_course_quiz' course.id%}"><button class="btn btn-outline-primary">Quiz</button></a>
+                  <button type="button" class="btn btn-outline-secondary btn-xs" data-toggle="modal" data-target="#editModal{{ course.id }}"><i class="fa fa-edit"></i></button>
+                  <div class="modal fade" id="editModal{{ course.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ course.id }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel{{ course.id }}">Edit Course</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="p-4">
+                              <form action="" method="post">
+                                {%csrf_token%}
+                                {{course_form.as_p}}
+                                <Button class="btn btn-primary" type="submit">Save</Button>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="custom-block" data-aos="fade-up">
+              <h2 class="section-title">Module</h2>
+
+              <div class="custom-accordion" id="accordion_1">
+                {% for module in modules %}
+                    <div class="accordion-item">
+                        <h2 class="mb-0 d-flex">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_{{ module.id }}" aria-expanded="false" aria-controls="collapse_{{ module.id }}">
+                                {{ module.title }}
+                            </button>
+                            <form action="{% url 'delete_course_module' course_id=course.id %}" method="post" style="display:inline;">
+                              {% csrf_token %}
+                              <input type="hidden" name="module_id" value="{{ module.id }}">
+                              <button type="submit" class="btn btn-sm btn-danger">
+                                  <i class="fa fa-trash"></i>
+                              </button>
+                           </form>
+                        </h2>
+            
+                        <div id="collapse_{{ module.id }}" class="collapse" aria-labelledby="heading_{{ module.id }}" data-parent="#accordion_1">
+                            <div class="">
+                                {{ module.description }}
+                                <ul>
+                                  {% for material in module.files.all %}
+                                    {% if material.file_type == "pdf" %}
+                                    <p><i class="fa-regular fa-file"></i> <a href="{{ material.file.url }}">{{ module.title }}.pdf</a></p>
+                                    <embed src="{{ material.file.url }}" width="640" height="480" type="application/pdf">
+                                    {% elif material.file_type == "video" %}
+                                    <video width="490" height="300" controls>
+                                        <source src="{{ material.file.url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    {% else %}
+                                    <p>{{ material.file.name }}</p>
+                                                      {% endif %}
+                                  {% empty %}
+                                      <li>No materials available.</li>
+                                  {% endfor %}
+                              </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="accordion-item">
+                        <div class="accordion-body">
+                            No modules available.
+                        </div>
+                    </div>
+                {% endfor %}
+              </div>
+            
+  
+            </div> <!-- END .custom-block -->
+
+              <h5>Discussion</h5>
+              <div class="discussion-container mt-4">
+              <!-- Display discussions and their replies -->
+              {% for message_id, discussion_data in discussions.items %}
+                  {% with discussion=discussion_data.message %}
+                  <div class="border p-3 mb-2">
+                      <strong>{{ discussion.sender.get_full_name }}:</strong> {{ discussion.message }}<br>
+                      <small class="text-muted">{{ discussion.timestamp }}</small>
+                      
+                      <!-- Display reply button if the discussion is not sent by the current user -->
+                      {% if discussion.sender != request.user %}
+                          <button type="button" class="btn btn-outline-secondary btn-sm" onclick="showReplyForm({{ discussion.id }}, '{{ discussion.sender.get_full_name }}')">Reply</button>
+                      {% endif %}
+
+                      <div id="reply-form-{{ discussion.id }}" class="reply-form" style="display: none;">
+                        <h5>Reply to <span id="reply-to-name-{{ discussion.id }}"></span></h5>
+                        <form method="post" action="{% url 'instructor_course_detail' course.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="message_id" value="{{ discussion.id }}">
+                            <input type="hidden" name="send_reply" value="true">
+                            <input type="hidden" name="receiver_id" value="{{ discussion.sender.id }}">
+                            <div class="form-group">
+                                <textarea name="message" class="form-control" rows="4" placeholder="Type your reply here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Reply</button>
+                        </form>
+                      </div>
+
+                  {% endwith %}
+                  
+                  <!-- Display replies if any -->
+                  {% for reply in discussion_data.replies %}
+                      <div class="border-left pl-3 mt-2">
+                          <strong>{{ reply.sender.get_full_name }}:</strong> {{ reply.message }}<br>
+                          <small class="text-muted">{{ reply.timestamp }}</small>
+                      </div>
+                  {% endfor %}
+                </div>
+ 
+                  <!-- Reply form template -->
+              {% empty %}
+              <p>No discussions yet.</p>
+              {% endfor %}
+          </div>
+          
+
+
+          </div>
+          
+          <div class="col-lg-6">
+            <div class="custom-block" data-aos="fade-up" data-aos-delay="100">
+              <h2 class="section-title">Add Module</h2>
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ module_form.as_p }}
+                {{ module_formset.management_form }}
+                <fieldset>
+                  <legend>Materials</legend>
+                  {% for form in module_formset %}
+                    {{ form.as_p }}
+                  {% endfor %}
+                </fieldset>
+                <button type="submit" class="btn btn-primary">Create Module</button>
+              </form>
+            </div>
+          </div> 
+          
+        </div> <!-- /.row -->    
+      </div> <!-- /.container -->  
+    </div> 
+  
+  
+  
+  </div>
+</div>
+
+<script>
+  function showReplyForm(messageId, senderName) {
+      var formContainer = document.getElementById('reply-form-' + messageId);
+      var replyToName = document.getElementById('reply-to-name-' + messageId);
+      
+      // Set the receiver ID and name in the form
+      replyToName.textContent = senderName;
+      
+      // Toggle the form display
+      if (formContainer.style.display === 'none') {
+          formContainer.style.display = 'block';
+      } else {
+          formContainer.style.display = 'none';
+      }
+  }
+  </script>
+  <style>
+    .discussion-container {
+        max-height: 270px; /* Adjust height as needed */
+        overflow-y: auto;
+        padding-right: 15px; /* Prevent scrollbar from overlapping content */
+    }
+    </style>
+{% endblock %}

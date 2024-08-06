@@ -1,0 +1,142 @@
+{% extends "base1.html" %}
+{% load static %}
+{% block body_block %}
+
+<div class="untree_co-section">
+  <div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="custom-accordion" id="accordion_1">
+                {% for module, quiz, questions in quizzes_with_modules %}
+                    <div class="accordion-item">
+                        <h2 class="mb-0 d-flex">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_{{ module.id }}" aria-expanded="false" aria-controls="collapse_{{ module.id }}">
+                                {{ module.title }}
+                            </button>
+                        </h2>
+
+                        <div id="collapse_{{ module.id }}" class="collapse" aria-labelledby="heading_{{ module.id }}" data-parent="#accordion_1">
+                            <div class="accordion-body">
+                                {% if quiz %}
+                                <div class="d-flex justify-content-between">
+                                    <h4>Quiz: {{ quiz.title }}</h4>
+                                    <form method="post" action="{% url 'delete_quiz' course.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+                                        <button type="submit" name="delete_quiz" class="btn btn-danger p-2"><i class="fa fa-trash"></i></button>
+                                    </form>
+                                </div>
+                                    <ul>
+                                        {% for question in questions %}
+                                            <li>
+                                                <strong>{{ question.text }} ({{ question.get_question_type_display }})</strong>
+                                                <form method="post" action="{% url 'delete_question' course.id %}" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                                                    <button type="submit" name="delete_question" class="btn btn-outline-danger p-2"><i class="fa fa-minus"></i></button>
+                                                </form>
+                                                <ul>
+                                                    {% if question.question_type == 'MC' %}
+                                                        {% for option in question.options.all %}
+                                                            <li>{{ option.text }}{% if option.is_correct %} (Correct){% endif %}</li>
+                                                        {% empty %}
+                                                            <li>No options available for this question.</li>
+                                                        {% endfor %}
+                                                    {% elif question.question_type == 'SA' %}
+                                                        <li>No predefined options for short option questions. Students will provide options in their own words.</li>
+                                                    {% elif question.question_type == 'TF' %}
+                                                        {% for option in question.options.all %}
+                                                            <li>{{ option.text }}{% if option.is_correct %} (Correct){% endif %}</li>
+                                                        {% empty %}
+                                                            <li>No options available for this question.</li>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </ul>
+                                            </li>
+                                        {% empty %}
+                                            <li>No questions available for this quiz.</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-question-modal" data-quiz-id="{{ quiz.id }}">
+                                        Add Question
+                                    </button>
+                                {% else %}
+                                    <p>No quiz available for this module.</p>
+                                    <form method="post" action="{% url 'instructor_course_quiz' course.id %}">
+                                        {% csrf_token %}
+                                        {{ quiz_form.as_p }}
+                                        <input type="hidden" id="modal-quiz-id" name="module_id" value="{{ module.id }}">
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" name="create_quiz" class="btn btn-primary">Create Quiz</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="accordion-item">
+                        <div class="accordion-body">
+                            No modules available.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for creating questions -->
+<div class="modal fade" id="create-question-modal" tabindex="-1" role="dialog" aria-labelledby="create-question-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title" id="create-question-modal-label">Create Question</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'instructor_course_quiz' course.id %}">
+                {% csrf_token %}
+                {{ question_form.as_p }}
+                {{ options_formset.management_form }}
+                {% for form in options_formset %}
+                    <div class="form-group">
+                        {{ form.text.label_tag }}
+                        {{ form.text }}
+                    </div>
+                    <div class="form-check">
+                        {{ form.is_correct }}
+                        {{ form.is_correct.label_tag }}
+                    </div>
+                {% endfor %}
+                <input type="hidden" name="quiz_id" id="modal-quiz-id">
+                <button type="submit" name="create_question_with_options" class="btn btn-primary">Create Question with Options</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#create-question-modal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var quizId = button.data('quiz-id');
+        var modal = $(this);
+        modal.find('#modal-quiz-id').val(quizId);
+    });
+
+    $('#create-option-modal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var questionId = button.data('question-id');
+        var modal = $(this);
+        modal.find('#modal-question-id').val(questionId);
+    });
+});
+</script>
+
+{% endblock %}

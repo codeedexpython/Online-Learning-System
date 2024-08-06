@@ -1,0 +1,38 @@
+{% extends "base1.html" %}
+
+{% block body_block %}
+
+  <div class="untree_co-section mt-5 bg-light">
+    <div class="container">
+      <div class="row align-items-stretch">
+        {% for course in courses %}
+    <a href="{% url 'course_detail' course.id %}">
+        <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="media-h d-flex h-100">
+                <div class="media-h-body">
+                    <h2 class="mb-3">
+                        <a href="{% url 'instructor_course_detail' course.id %}">{{ course.title }} | {{ course.category }}</a>
+                    </h2>
+                    <div class="meta">
+                        <span class="icon-calendar mr-2"></span>
+                        <span>{{ course.created_at }}</span>
+                    </div>
+                    <p>{{ course.description }}</p>
+                    <div class="">
+                        <form action="{% url 'instructor_course_delete' course_id=course.id %}" method="post" class="delete-course-form" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                Delete Course
+                            </button>
+                          </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+{% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endblock %}

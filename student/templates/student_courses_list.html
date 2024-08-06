@@ -1,0 +1,63 @@
+{% extends "base1.html" %}
+{%load static%}
+{% block body_block %}
+<div class="untree_co-section">
+    <div class="container">
+
+        <div class="container mt-4">
+            <h2>Enrolled Courses</h2>
+
+            <div class="row align-items-stretch">
+                {% if course_progress_data %}
+                {% for data in course_progress_data %}
+                <div class="col-lg-5 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="media-h d-flex h-100">
+                        <div class="media-h-body">
+                            <h2 class="mb-3">
+                                <a href="{% url 'student_course_detail' data.course.id %}">{{ data.course.title }}</a>
+                            </h2>Category: {{ data.course.category }}
+                            <div class="d-flex justify-content-between">
+                                <span>Completed Quiz: {{ data.completed_quizzes }}<br>
+                                    Total Quiz: {{data.total_quizzes}}
+                                </span>
+                                <div class="" style="height: 50px; width: 50px;">
+                                    <canvas id="progressChart_{{ forloop.counter }}" width="60" height="60"></canvas>
+                                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                                    <script>
+                                        var ctx = document.getElementById('progressChart_{{ forloop.counter }}').getContext('2d');
+                                        var progressChart = new Chart(ctx, {
+                                            type: 'doughnut',
+                                            data: {
+                                                datasets: [{
+                                                    label: 'Progress',
+                                                    data: [{{ data.progress }}, 100 - {{ data.progress }}],
+                                                    backgroundColor: ['#4caf50', '#e0e0e0'],
+                                                    borderWidth: 0
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                cutoutPercentage: 80,
+                                                legend: {
+                                                    display: false
+                                                }
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <a href="{% url 'student_course_detail' data.course.id %}"><button class="btn btn-primary">
+                                View Course
+                            </button></a>
+                        </div>
+                    </div>
+                </div>
+                    {% endfor %}
+              </div>
+              {% else %}
+                  <p>You are not enrolled in any courses.</p>
+              {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

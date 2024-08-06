@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<div class="container mt-4">
+    <h1>Enrollment Statistics</h1>
+    
+    <div class="row column1">
+        {% for course in course_data %}
+            <div class="col-lg-6">
+                <div class="white_shd full margin_bottom_30">
+                    <div class="full graph_head">
+                        <div class="heading1 margin_0">
+                            <h2>{{ course.title }} - Enrollment Statistics</h2>
+                        </div>
+                    </div>
+                    <div class="map_section padding_infor_info">
+                        <canvas id="chart_{{ forloop.counter }}"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        {% for course in course_data %}
+            const ctx_{{ forloop.counter }} = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
+            new Chart(ctx_{{ forloop.counter }}, {
+                type: 'bar',
+                data: {
+                    labels: {{ course.labels|safe }},
+                    datasets: [{
+                        label: 'Approved Requests',
+                        data: [{{ course.data.0 }}],
+                        backgroundColor: 'rgba(68, 231, 9, 0.96)',
+                        borderColor: 'rgba(68, 231, 9, 0.96)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Pending Requests',
+                        data: [{{ course.data.1 }}],
+                        backgroundColor: 'rgba(1, 1, 1, 0.9)',
+                        borderColor: 'rgba(1, 1, 1, 0.9)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Rejected Requests',
+                        data: [{{ course.data.2 }}],
+                        backgroundColor: 'rgba(231, 9, 9, 0.96)',
+                        borderColor: 'rgba(231, 9, 9, 0.96)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Current Enrollments',
+                        data: [{{ course.data.3 }}],
+                        backgroundColor: 'rgba(9, 231, 210, 0.96)',
+                        borderColor: 'rgba(9, 231, 210, 0.96)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Enrollment Limit',
+                        data: [{{ course.data.4 }}],
+                        backgroundColor: 'rgba(231, 207, 9, 0.96)',
+                        borderColor: 'rgba(231, 207, 9, 0.96)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true // Hide the legend
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false // Hide x-axis labels
+                        },
+                        y: {
+                            beginAtZero: true,
+                            display: true // Optionally keep y-axis labels
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+    </script>
+</div>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}

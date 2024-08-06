@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block body_block %}
+<div class="d-flex justify-content-center mt-5">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload Template</button>
+    </form>
+</div>
+        <div class="col-md-10">
+            <div class="white_shd full margin_bottom_30">  
+               <div class="full graph_head">
+                  <div class="heading1 margin_0">
+                    
+                     <h2>Certificate Templates</h2>
+                  </div>
+               </div>
+               <div class="table_section padding_infor_info">
+                  <div class="table-responsive-sm">
+                     <table class="table">
+                        <thead>
+                           <tr>
+                              <th>Course</th>
+                              <th>Instructor</th>
+                              <th>Min Score%</th>
+                              <th>Template</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in templates %}
+                           <tr>
+                              <td>{{ template.course }}</td>
+                              <td>{{ template.course.instructor }}</td>
+                              <td>{{ template.min_avg_score }}</td>
+                              <td><a href="{{ template.template_file.url }}">{{ template.template_file }}</a></td>
+                           </tr>
+                           {% endfor %}
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+
+{% endblock %}

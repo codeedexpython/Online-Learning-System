@@ -1,0 +1,138 @@
+{%extends 'base.html'%}
+{%block body_block%}
+               <!-- end topbar -->
+               <!-- dashboard inner -->
+               <div class="midde_cont">
+                  <div class="container-fluid">
+                     <div class="row column_title">
+                        <div class="col-md-12">
+                           <div class="page_title">
+                              <h2>Profile</h2>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- row -->
+                     <div class="row column1">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
+                           <div class="white_shd full margin_bottom_30">
+                              <div class="full graph_head">
+                                 <div class="heading1 margin_0">
+                                    <h2>User profile</h2>
+                                 </div>
+                              </div>
+                              <div class="full price_table padding_infor_info">
+                                 <div class="row">
+                                    <!-- user profile section --> 
+                                    <!-- profile image -->
+                                    <div class="col-lg-12">
+                                       <div class="d-flex justify-content-end">
+                                          <!-- Button trigger modal -->
+                                          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                             <i class="fa fa-edit"></i>
+                                           </button>
+
+                                           <!-- Modal -->
+                                           <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                             <div class="modal-dialog modal-dialog-centered">
+                                               <div class="modal-content">
+                                                 <div class="modal-header">
+                                                   <h1 class="modal-title fs-5" id="exampleModalLabel">Update Profile</h1>
+                                                 </div>
+                                                 <div class="modal-body">
+                                                   <form action="" method="post">
+                                                      {%csrf_token%}
+                                                      {%for fields in form%}
+                                                      <p>
+                                                          {{fields.label_tag}}
+                                                          {{fields}}
+                                                      {%endfor%}
+                                                      </p>
+                                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                      <button type="submit" class="btn btn-primary">Save changes</button>
+                                                  </form>
+                                                 </div>
+                                               </div>
+                                             </div>
+                                           </div>
+                                       </div>
+                                       <div class="full dis_flex center_text">
+                                          <div class="profile_contant">
+                                             <div class="contact_inner">
+                                                <h3>{{student.first_name}} {{student.last_name}}</h3>
+                                                <ul class="list-unstyled">
+                                                   <li><i class="fa fa-envelope-o"></i> : {{student.email}}</li>
+                                                </ul>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <!-- profile contant section -->
+                                       <div class="full inner_elements margin_top_30">
+                                          <div class="tab_style2">
+                                             <div class="tabbar">
+                                                <nav>
+                                                   <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                                      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#recent_activity" role="tab" aria-selected="true">Enrolled Course</a>
+                                                      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#course" role="tab" aria-selected="false">Certificates</a>
+                                                      <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#profile_section" role="tab" aria-selected="false">Activity</a>
+                                                   </div>
+                                                </nav>
+                                                <div class="tab-content" id="nav-tabContent">
+                                                   <div class="tab-pane fade show active" id="recent_activity" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                      <div class="msg_list_main">
+                                                         <ul class="msg_list">
+                                                            {%for enroll in courses%}
+                                                            <li>
+                                                               <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#"></span>
+                                                               <span>
+                                                               <span class="name_user">{{enroll.course.title}}</span>
+                                                               <span class="msg_user">{{enroll.course.difficulty_level}}</span>
+                                                               <span class="time_ago">{{enroll.enrollment_date}}</span>
+                                                               </span>
+                                                            </li>
+                                                            {%endfor%}
+                                                            
+                                                         </ul>
+                                                      </div>
+                                                   </div>
+                                                   <div class="tab-pane fade" id="course" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                                      <div class="msg_list_main">
+                                                         <ul class="msg_list">
+                                                            <li>
+                                                                <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#"></span>
+                                                                <span>
+                                                                <span class="name_user">Taison Jack</span>
+                                                                <span class="msg_user">Sed ut perspiciatis unde omnis.</span>
+                                                                <span class="time_ago">12 min ago</span>
+                                                                </span>
+                                                             </li>
+                                                         </ul>
+                                                      </div>
+                                                   </div>
+                                                   <div class="tab-pane fade" id="profile_section" role="tabpanel" aria-labelledby="nav-contact-tab">
+                                                      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et 
+                                                         quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos 
+                                                         qui ratione voluptatem sequi nesciunt.
+                                                      </p>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <!-- end user profile section -->
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-md-2"></div>
+                        </div>
+                        <!-- end row -->
+                     </div>
+                     <!-- footer -->
+                  </div>
+                  <!-- end dashboard inner -->
+               </div>
+            </div>
+         </div>
+      </div>
+      {%endblock%}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<div class="container">
+    <h1>Analytics Dashboard</h1>
+
+       <div class="white_shd full margin_bottom_30">
+          <div class="full graph_head">
+             <div class="heading1 margin_0">
+                <h2>Student Performance</h2>
+             </div>
+          </div>
+          <div class="table_section padding_infor_info">
+             <div class="table-responsive-sm">
+                <table class="table table-bordered">
+                   <thead>
+                      <tr>
+                        <th>Student Name</th>
+                        <th>Course Name</th>
+                        <th>Average Score</th>
+                      </tr>
+                   </thead>
+                   <tbody>
+                    {% for performance in student_performance %}
+                    <tr>
+                        <td>{{ performance.student__username }}</td>
+                        <td>{{ performance.quiz__module__course__title }}</td>
+                        <td>{{ performance.avg_score|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">No data available</td>
+                    </tr>
+                    {% endfor %}
+                   </tbody>
+                </table>
+             </div>
+          </div>
+       </div>
+
+    <a href="{%url 'export_pdf'%}"><button class="btn btn-primary">Download Report as PDF</button></a>
+    <a href="{%url 'instructor_activity_report'%}"><button class="btn btn-primary">Instructor Activity Report</button></a>
+    <a href="{%url 'export_csv'%}"><button class="btn btn-primary">Download Report as CSV</button></a>
+</div>
+{% endblock %}
